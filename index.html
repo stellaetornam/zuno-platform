@@ -1,0 +1,256 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZUNO - Make Everyday Easier</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#faf8ff;color:#24183d}
+header{background:white;padding:15px 5%;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+.logo{font-size:29px;font-weight:900;color:#7045d5}
+button{border:0;padding:12px 17px;border-radius:25px;font-weight:bold;cursor:pointer;margin:3px}
+.purple{background:#7045d5;color:white}
+.pink{background:#f04eaa;color:white}
+.light{background:#eee7ff;color:#7045d5}
+.hero{text-align:center;color:white;padding:65px 18px;background:linear-gradient(120deg,#7045d5,#f04eaa,#ffd447)}
+.hero h1{font-size:clamp(38px,7vw,60px);margin:0 0 15px}
+.hero p{line-height:1.6}
+.search{display:flex;max-width:600px;margin:25px auto;background:white;padding:7px;border-radius:30px}
+.search input{flex:1;min-width:0;border:0;padding:13px;outline:none}
+.search button{background:#24183d;color:white}
+#searchResult{display:none;background:white;color:#24183d;padding:13px;border-radius:12px;max-width:600px;margin:15px auto}
+section{padding:45px 5%}
+.heading{text-align:center}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:18px;max-width:1050px;margin:25px auto}
+.card{background:white;padding:23px;border-radius:20px;box-shadow:0 4px 18px #0001}
+.emoji{font-size:38px}
+.card p{color:#766d83;line-height:1.5}
+.tool{display:none;background:white;max-width:650px;margin:25px auto;padding:24px;border-radius:18px}
+.tool input,.tool textarea{width:100%;padding:13px;margin:8px 0;border:1px solid #ddd;border-radius:10px}
+.tool textarea{min-height:90px}
+.output{background:#f1edff;padding:14px;border-radius:10px;margin-top:12px;white-space:pre-wrap}
+.about{text-align:center;background:#eee7ff;line-height:1.8}
+footer{text-align:center;padding:28px;background:#24183d;color:white}
+.modal{display:none;position:fixed;inset:0;background:#170d2dcc;z-index:10;align-items:center;justify-content:center;padding:15px}
+.modalBox{background:white;width:100%;max-width:390px;padding:25px;border-radius:20px}
+.modalBox input{width:100%;padding:13px;margin:8px 0;border:1px solid #ddd;border-radius:10px}
+.modalBox button{width:100%;margin:8px 0}
+.note{font-size:12px;color:#777;line-height:1.5}
+#accountMessage{color:#7045d5;line-height:1.5}
+@media(max-width:500px){
+header{padding:12px 3%}
+.logo{font-size:24px}
+header button{padding:9px 11px;font-size:12px}
+.search{flex-direction:column;border-radius:15px}
+}
+</style>
+</head>
+<body>
+
+<header>
+ <div class="logo">✦ ZUNO</div>
+ <div>
+  <span id="greeting"></span>
+  <button class="light" onclick="showLogin()">Login</button>
+  <button class="purple" onclick="showSignup()">Sign Up</button>
+  <button class="light" id="logoutButton" onclick="logout()" style="display:none">Log out</button>
+ </div>
+</header>
+
+<div class="hero">
+ <h1>Make Everyday Easier.</h1>
+ <p>One platform. Endless possibilities.<br>Useful experiences for everyday life.</p>
+ <div class="search">
+  <input id="searchInput" placeholder="What can ZUNO help you with?">
+  <button onclick="searchZuno()">Explore ✨</button>
+ </div>
+ <div id="searchResult"></div>
+</div>
+
+<section>
+ <div class="heading">
+  <h2>Explore ZUNO</h2>
+  <p>What would you like to do today?</p>
+ </div>
+ <div class="cards">
+  <div class="card"><div class="emoji">💰</div><h3>Money</h3><p>Calculate expenses and organise your budget.</p><button class="light" onclick="showTool('money')">Explore Money</button></div>
+  <div class="card"><div class="emoji">✍️</div><h3>Writing</h3><p>Get help with messages and letters.</p><button class="light" onclick="showTool('writing')">Explore Writing</button></div>
+  <div class="card"><div class="emoji">📚</div><h3>Learning</h3><p>Explore new topics and ideas.</p><button class="light" onclick="showTool('learning')">Explore Learning</button></div>
+  <div class="card"><div class="emoji">📅</div><h3>Planning</h3><p>Organise your day and tasks.</p><button class="light" onclick="showTool('planning')">Explore Planning</button></div>
+ </div>
+
+ <div class="tool" id="money">
+  <h2>💰 Money Calculator</h2>
+  <input id="income" type="number" placeholder="Your income">
+  <input id="expenses" type="number" placeholder="Your expenses">
+  <button class="purple" onclick="calculate()">Calculate</button>
+  <div class="output" id="moneyOutput">Your result will appear here.</div>
+ </div>
+
+ <div class="tool" id="writing">
+  <h2>✍️ Writing Helper</h2>
+  <textarea id="writingInput" placeholder="Type your message here"></textarea>
+  <button class="purple" onclick="writeText()">Check My Text</button>
+  <div class="output" id="writingOutput">Your result will appear here.</div>
+ </div>
+
+ <div class="tool" id="learning">
+  <h2>📚 Learning Corner</h2>
+  <input id="topic" placeholder="What would you like to learn?">
+  <button class="purple" onclick="learn()">Explore Topic</button>
+  <div class="output" id="learningOutput">Your guide will appear here.</div>
+ </div>
+
+ <div class="tool" id="planning">
+  <h2>📅 Daily Planner</h2>
+  <input id="task" placeholder="Enter a task">
+  <button class="purple" onclick="addTask()">Add Task</button>
+  <ul id="taskList"></ul>
+ </div>
+</section>
+
+<section class="about">
+ <h2>About ZUNO ✨</h2>
+ <p>ZUNO brings useful everyday experiences together in one friendly place. Our mission is simple: make everyday life easier.</p>
+ <h3>One platform. Endless possibilities.</h3>
+</section>
+
+<footer>
+ <div class="logo" style="color:#ffd447">✦ ZUNO</div>
+ <p>Make everyday easier.</p>
+ © 2026 ZUNO
+</footer>
+
+<!-- SIGN UP FORM -->
+<div class="modal" id="signupModal">
+ <div class="modalBox">
+  <button class="light" onclick="closeForms()">Close ✕</button>
+  <h2>Create your account</h2>
+  <p>Welcome to ZUNO!</p>
+  <input id="signupName" placeholder="Your name">
+  <input id="signupEmail" type="email" placeholder="Email address">
+  <input id="signupPassword" type="password" placeholder="Demo password">
+  <button class="purple" onclick="registerUser()">Create Account</button>
+  <p class="note">Demo only. Do not use a real password or sensitive information.</p>
+  <div id="signupMessage"></div>
+ </div>
+</div>
+
+<!-- LOGIN FORM -->
+<div class="modal" id="loginModal">
+ <div class="modalBox">
+  <button class="light" onclick="closeForms()">Close ✕</button>
+  <h2>Welcome Back!</h2>
+  <p>Log in to your ZUNO demo account.</p>
+  <input id="loginEmail" type="email" placeholder="Email address">
+  <input id="loginPassword" type="password" placeholder="Demo password">
+  <button class="purple" onclick="loginUser()">Login</button>
+  <p class="note">Use the demo details you entered when signing up.</p>
+  <div id="loginMessage"></div>
+ </div>
+</div>
+
+<script>
+function showSignup(){
+ document.getElementById("loginModal").style.display="none";
+ document.getElementById("signupModal").style.display="flex";
+}
+function showLogin(){
+ document.getElementById("signupModal").style.display="none";
+ document.getElementById("loginModal").style.display="flex";
+}
+function closeForms(){
+ document.getElementById("signupModal").style.display="none";
+ document.getElementById("loginModal").style.display="none";
+}
+function registerUser(){
+ var name=document.getElementById("signupName").value.trim();
+ var email=document.getElementById("signupEmail").value.trim().toLowerCase();
+ var password=document.getElementById("signupPassword").value;
+ var message=document.getElementById("signupMessage");
+ if(!name||!email||!password){message.innerText="Please fill in all three fields.";return;}
+ var users=JSON.parse(localStorage.getItem("zunoAccounts")||"[]");
+ for(var i=0;i<users.length;i++){
+  if(users[i].email===email){message.innerText="This email already has an account. Please log in.";return;}
+ }
+ users.push({name:name,email:email,password:password});
+ localStorage.setItem("zunoAccounts",JSON.stringify(users));
+ localStorage.setItem("zunoCurrentUser",JSON.stringify({name:name,email:email}));
+ updateHeader();
+ closeForms();
+ alert("Welcome to ZUNO, "+name+"!");
+}
+function loginUser(){
+ var email=document.getElementById("loginEmail").value.trim().toLowerCase();
+ var password=document.getElementById("loginPassword").value;
+ var users=JSON.parse(localStorage.getItem("zunoAccounts")||"[]");
+ var found=null;
+ for(var i=0;i<users.length;i++){
+  if(users[i].email===email&&users[i].password===password){found=users[i];break;}
+ }
+ if(!found){document.getElementById("loginMessage").innerText="Email or password is incorrect. Try again.";return;}
+ localStorage.setItem("zunoCurrentUser",JSON.stringify({name:found.name,email:found.email}));
+ updateHeader();
+ closeForms();
+ alert("Welcome back, "+found.name+"!");
+}
+function updateHeader(){
+ var user=JSON.parse(localStorage.getItem("zunoCurrentUser")||"null");
+ document.getElementById("greeting").innerText=user?"Hi, "+user.name+" ":"";
+ document.getElementById("logoutButton").style.display=user?"inline-block":"none";
+}
+function logout(){
+ localStorage.removeItem("zunoCurrentUser");
+ updateHeader();
+ alert("You have logged out.");
+}
+updateHeader();
+
+function showTool(id){
+ var tools=document.querySelectorAll(".tool");
+ for(var i=0;i<tools.length;i++){tools[i].style.display="none";}
+ document.getElementById(id).style.display="block";
+ document.getElementById(id).scrollIntoView({behavior:"smooth",block:"center"});
+}
+function searchZuno(){
+ var q=document.getElementById("searchInput").value.toLowerCase();
+ var result=document.getElementById("searchResult");
+ result.style.display="block";
+ if(!q.trim()){result.innerText="Tell ZUNO what you need help with.";return;}
+ if(q.indexOf("money")>=0||q.indexOf("budget")>=0||q.indexOf("calculate")>=0){result.innerText="Let's work on your money!";showTool("money");}
+ else if(q.indexOf("write")>=0||q.indexOf("message")>=0||q.indexOf("letter")>=0){result.innerText="Let's work on your writing!";showTool("writing");}
+ else if(q.indexOf("learn")>=0||q.indexOf("explain")>=0){result.innerText="Let's learn something new!";showTool("learning");}
+ else if(q.indexOf("plan")>=0||q.indexOf("schedule")>=0){result.innerText="Let's organise your day!";showTool("planning");}
+ else{result.innerText="Try asking about money, writing, learning or planning.";}
+}
+function calculate(){
+ var a=document.getElementById("income").value;
+ var b=document.getElementById("expenses").value;
+ if(a===""||b===""){document.getElementById("moneyOutput").innerText="Enter both amounts.";return;}
+ document.getElementById("moneyOutput").innerText="Your remaining balance is: "+(Number(a)-Number(b)).toFixed(2);
+}
+function writeText(){
+ var t=document.getElementById("writingInput").value.trim();
+ document.getElementById("writingOutput").innerText=t?"Your text: "+t+"\n\nReal AI writing assistance will be added later.":"Please type something first.";
+}
+function learn(){
+ var t=document.getElementById("topic").value.trim();
+ document.getElementById("learningOutput").innerText=t?"Your chosen topic: "+t+"\n\nThis is currently a demo. We will add real learning assistance later.":"Please enter a topic.";
+}
+function addTask(){
+ var t=document.getElementById("task").value.trim();
+ if(!t)return;
+ var li=document.createElement("li");
+ var c=document.createElement("input");
+ c.type="checkbox";
+ c.style.width="auto";
+ li.appendChild(c);
+ li.appendChild(document.createTextNode(" "+t));
+ document.getElementById("taskList").appendChild(li);
+ document.getElementById("task").value="";
+}
+</script>
+</body>
+</html>
