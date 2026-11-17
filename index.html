@@ -231,9 +231,38 @@ function calculate(){
  if(a===""||b===""){document.getElementById("moneyOutput").innerText="Enter both amounts.";return;}
  document.getElementById("moneyOutput").innerText="Your remaining balance is: "+(Number(a)-Number(b)).toFixed(2);
 }
-function writeText(){
- var t=document.getElementById("writingInput").value.trim();
- document.getElementById("writingOutput").innerText=t?"Your text: "+t+"\n\nReal AI writing assistance will be added later.":"Please type something first.";
+async function writeText(){
+  var t = document.getElementById("writingInput").value.trim();
+  var output = document.getElementById("writingOutput");
+
+  if(!t){
+    output.innerText = "Please enter what you want ZUNO to write.";
+    return;
+  }
+
+  output.innerText = "ZUNO is working...";
+
+  try {
+    var response = await fetch(
+      "https://zuno-assistant-api.boglostellaetornam.workers.dev/api/write",
+      {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({prompt: t})
+      }
+    );
+
+    var data = await response.json();
+
+    if(!response.ok){
+      throw new Error(data.error || "Something went wrong.");
+    }
+
+    output.innerText = data.message;
+
+  } catch(error) {
+    output.innerText = "Sorry, ZUNO could not connect. Please try again.";
+  }
 }
 function learn(){
  var t=document.getElementById("topic").value.trim();
